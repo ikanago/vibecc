@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(cmake:*)",
+      "Bash(mv:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(fd:*)",
+      "Bash(rg:*)"
+    ],
+    "deny": [
+      "Bash(rm:*)"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ matrix.os }}-${{ matrix.build-type }}
+          create-symlink: true
+
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - uses: lukka/run-cmake@v10
+        with:
+          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+          cmakeListsTxtPath: "${{ github.workspace }}/CMakeLists.txt"
+          cmakeAppendedArgs: "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          buildWithCMake: true
+          buildDirectory: "${{ github.workspace }}/build"
+
+      - run: |
+          cmake --build build --target test -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
