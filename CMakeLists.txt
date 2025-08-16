@@ -37,9 +37,12 @@ if(TEST_SOURCES)
     add_executable(vibecc_tests ${TEST_SOURCES} ${SOURCES})
     target_link_libraries(vibecc_tests gtest_main)
     target_include_directories(vibecc_tests PRIVATE src)
-    
     include(GoogleTest)
     gtest_discover_tests(vibecc_tests)
+    add_custom_target(run_tests
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        DEPENDS vibecc_tests
+    )
 endif()
 
 set_target_properties(vibecc PROPERTIES

@@ -3,14 +3,42 @@
     "allow": [
       "Bash(mkdir:*)",
       "Bash(cmake:*)",
+      "Bash(make:*)",
       "Bash(mv:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(fd:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(jq:*)"
     ],
     "deny": [
       "Bash(rm:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            // If the command is git commit, run the tests and block if they fail.
+            // When failing, return a information for Claude Code and exit with 2 to indicate the failure.
+            "command": "jq -r '.tool_input.command // \"\"' | grep -q \"^git commit\" && (make -C build -j run_tests 1>/dev/null; [ $? -eq 1 ] && echo '{\"decision\":\"block\",\"reason\":\"Tests failed. Fix them before committing.\"}' && exit 2) || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | grep -E '\\.(c|h|cpp)$' > /dev/null; if [ $? = 0 ]; then make format -C build; fi"
+          }
+        ]
+      }
     ]
   }
 }
