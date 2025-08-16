@@ -2,9 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
   pull_request:
-    branches: [main]
 
 jobs:
   build-and-test:
@@ -15,7 +13,7 @@ jobs:
 
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ matrix.os }}-${{ matrix.build-type }}
+          key: ci
           create-symlink: true
 
       - run: |
