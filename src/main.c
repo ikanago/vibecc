@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "codegen.h"
 #include "lexer.h"
 #include "parser.h"
-#include "codegen.h"
 
 int main(int argc, char **argv) {
     if (argc != 2) {

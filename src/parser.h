@@ -27,55 +27,55 @@ typedef struct ASTNode {
             struct ASTNode **functions;
             size_t function_count;
         } program;
-        
+
         struct {
             char *name;
             char *return_type;
             struct ASTNode *body;
         } function;
-        
+
         struct {
             struct ASTNode **statements;
             size_t statement_count;
         } block;
-        
+
         struct {
             TokenType op;
             struct ASTNode *left;
             struct ASTNode *right;
         } binary_op;
-        
+
         struct {
             TokenType op;
             struct ASTNode *operand;
         } unary_op;
-        
+
         struct {
             char *name;
             char *type;
             struct ASTNode *initializer;
         } variable_declaration;
-        
+
         struct {
             char *name;
             struct ASTNode *value;
         } assignment;
-        
+
         struct {
             struct ASTNode *value;
         } return_stmt;
-        
+
         struct {
             struct ASTNode *condition;
             struct ASTNode *then_branch;
             struct ASTNode *else_branch;
         } if_stmt;
-        
+
         struct {
             struct ASTNode *condition;
             struct ASTNode *body;
         } while_stmt;
-        
+
         char *identifier;
         int number;
     } data;

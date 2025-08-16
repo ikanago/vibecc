@@ -53,3 +53,31 @@ if(TARGET vibecc_tests)
 endif()
 
 install(TARGETS vibecc DESTINATION bin)
+
+# Find clang-format
+find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
+
+if(CLANG_FORMAT_EXECUTABLE)
+    # Get all C/C++ source and header files
+    file(GLOB_RECURSE FORMAT_SOURCES 
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h"
+    )
+    
+    # Add clang-format target
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${FORMAT_SOURCES}
+        VERBATIM
+    )
+    
+    # Add clang-format-check target to verify formatting without modifying files
+    add_custom_target(format-check
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${FORMAT_SOURCES}
+        COMMENT "Checking code formatting with clang-format"
+        VERBATIM
+    )
+else()
+    message(WARNING "clang-format not found. Format targets will not be available.")
+endif()
