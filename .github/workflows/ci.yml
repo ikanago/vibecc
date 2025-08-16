@@ -15,6 +15,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake
 
+      - uses: rui314/setup-mold@v1
+
       - run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
 
