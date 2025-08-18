@@ -4,6 +4,7 @@
       "Bash(mkdir:*)",
       "Bash(cmake:*)",
       "Bash(make:*)",
+      "Bash(git add:*)",
       "Bash(mv:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
