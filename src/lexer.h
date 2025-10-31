@@ -3,9 +3,11 @@
 
 #include <stddef.h>
 
-typedef enum {
+#include "vector.h"
+
+enum TokenType {
     TOKEN_EOF,
-    TOKEN_NUMBER,
+    TOKEN_INTEGER,
     TOKEN_IDENTIFIER,
     TOKEN_PLUS,
     TOKEN_MINUS,
@@ -28,26 +30,23 @@ typedef enum {
     TOKEN_LE,
     TOKEN_GT,
     TOKEN_GE,
-} TokenType;
+};
 
-typedef struct {
-    TokenType type;
+struct Token {
+    enum TokenType type;
     char *value;
-    int line;
-    int column;
-} Token;
+    int line;    // 1-indexed
+    int column;  // 1-indexed
+};
 
-typedef struct {
+struct Lexer {
     const char *input;
     size_t position;
     size_t length;
     int line;
     int column;
-} Lexer;
+};
 
-Lexer *lexer_new(const char *input);
-void lexer_free(Lexer *lexer);
-Token *lexer_next_token(Lexer *lexer);
-void token_free(Token *token);
+struct Vector *lex(const char *input);
 
 #endif

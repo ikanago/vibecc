@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-Lexer *lexer_new(const char *input) {
-    Lexer *lexer = malloc(sizeof(Lexer));
+static struct Lexer *lexer_new(const char *input) {
+    struct Lexer *lexer = malloc(sizeof(struct Lexer));
     if (!lexer) return NULL;
 
     lexer->input = input;
@@ -18,20 +18,14 @@ Lexer *lexer_new(const char *input) {
     return lexer;
 }
 
-void lexer_free(Lexer *lexer) {
-    if (lexer) {
-        free(lexer);
-    }
-}
-
-static char lexer_current_char(Lexer *lexer) {
+static char peek_char(struct Lexer *lexer) {
     if (lexer->position >= lexer->length) {
         return '\0';
     }
     return lexer->input[lexer->position];
 }
 
-static void lexer_advance(Lexer *lexer) {
+static void consume_token(struct Lexer *lexer) {
     if (lexer->position < lexer->length) {
         if (lexer->input[lexer->position] == '\n') {
             lexer->line++;
@@ -43,16 +37,16 @@ static void lexer_advance(Lexer *lexer) {
     }
 }
 
-static void lexer_skip_whitespace(Lexer *lexer) {
-    while (isspace(lexer_current_char(lexer))) {
-        lexer_advance(lexer);
+static void skip_whitespace(struct Lexer *lexer) {
+    while (isspace(peek_char(lexer))) {
+        consume_token(lexer);
     }
 }
 
-static Token *token_new(
-    TokenType type, const char *value, int line, int column
+static struct Token *token_new(
+    enum TokenType type, const char *value, int line, int column
 ) {
-    Token *token = malloc(sizeof(Token));
+    struct Token *token = malloc(sizeof(struct Token));
     if (!token) return NULL;
 
     token->type = type;
@@ -63,19 +57,12 @@ static Token *token_new(
     return token;
 }
 
-void token_free(Token *token) {
-    if (token) {
-        free(token->value);
-        free(token);
-    }
-}
-
-Token *lexer_next_token(Lexer *lexer) {
-    lexer_skip_whitespace(lexer);
+static struct Token *next_token(struct Lexer *lexer) {
+    skip_whitespace(lexer);
 
     int line = lexer->line;
     int column = lexer->column;
-    char current = lexer_current_char(lexer);
+    char current = peek_char(lexer);
 
     if (current == '\0') {
         return token_new(TOKEN_EOF, NULL, line, column);
@@ -83,30 +70,27 @@ Token *lexer_next_token(Lexer *lexer) {
 
     if (isdigit(current)) {
         size_t start = lexer->position;
-        while (isdigit(lexer_current_char(lexer))) {
-            lexer_advance(lexer);
+        while (isdigit(peek_char(lexer))) {
+            consume_token(lexer);
         }
         size_t length = lexer->position - start;
         char *value = malloc(length + 1);
         strncpy(value, lexer->input + start, length);
         value[length] = '\0';
-        Token *token = token_new(TOKEN_NUMBER, value, line, column);
-        free(value);
-        return token;
+        return token_new(TOKEN_INTEGER, value, line, column);
     }
 
     if (isalpha(current) || current == '_') {
         size_t start = lexer->position;
-        while (isalnum(lexer_current_char(lexer)) ||
-               lexer_current_char(lexer) == '_') {
-            lexer_advance(lexer);
+        while (isalnum(peek_char(lexer)) || peek_char(lexer) == '_') {
+            consume_token(lexer);
         }
         size_t length = lexer->position - start;
         char *value = malloc(length + 1);
         strncpy(value, lexer->input + start, length);
         value[length] = '\0';
 
-        TokenType type = TOKEN_IDENTIFIER;
+        enum TokenType type = TOKEN_IDENTIFIER;
         if (strcmp(value, "int") == 0)
             type = TOKEN_INT;
         else if (strcmp(value, "return") == 0)
@@ -118,12 +102,10 @@ Token *lexer_next_token(Lexer *lexer) {
         else if (strcmp(value, "while") == 0)
             type = TOKEN_WHILE;
 
-        Token *token = token_new(type, value, line, column);
-        free(value);
-        return token;
+        return token_new(type, value, line, column);
     }
 
-    lexer_advance(lexer);
+    consume_token(lexer);
 
     switch (current) {
         case '+':
@@ -149,4 +131,22 @@ Token *lexer_next_token(Lexer *lexer) {
         default:
             return NULL;
     }
+}
+
+struct Vector *lex(const char *input) {
+    struct Lexer *lexer = lexer_new(input);
+    if (lexer == NULL) return NULL;
+
+    struct Vector *tokens = vector_new();
+    if (tokens == NULL) return NULL;
+
+    struct Token *token = NULL;
+    while (token = next_token(lexer)) {
+        if (token->type == TOKEN_EOF) {
+            return;
+        }
+        vector_push(tokens, token);
+    }
+
+    return tokens;
 }

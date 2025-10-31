@@ -3,7 +3,7 @@
 
 #include "lexer.h"
 
-typedef enum {
+enum ASTNodeType {
     AST_PROGRAM,
     AST_FUNCTION,
     AST_STATEMENT,
@@ -18,77 +18,74 @@ typedef enum {
     AST_WHILE,
     AST_BLOCK,
     AST_VARIABLE_DECLARATION,
-} ASTNodeType;
+};
 
-typedef struct ASTNode {
-    ASTNodeType type;
+struct AstNode {
+    enum ASTNodeType type;
     union {
         struct {
-            struct ASTNode **functions;
+            struct AstNode **functions;
             size_t function_count;
         } program;
 
         struct {
             char *name;
             char *return_type;
-            struct ASTNode *body;
+            struct AstNode *body;
         } function;
 
         struct {
-            struct ASTNode **statements;
+            struct AstNode **statements;
             size_t statement_count;
         } block;
 
         struct {
-            TokenType op;
-            struct ASTNode *left;
-            struct ASTNode *right;
+            enum TokenType op;
+            struct AstNode *left;
+            struct AstNode *right;
         } binary_op;
 
         struct {
-            TokenType op;
-            struct ASTNode *operand;
+            enum TokenType op;
+            struct AstNode *operand;
         } unary_op;
 
         struct {
             char *name;
             char *type;
-            struct ASTNode *initializer;
+            struct AstNode *initializer;
         } variable_declaration;
 
         struct {
             char *name;
-            struct ASTNode *value;
+            struct AstNode *value;
         } assignment;
 
         struct {
-            struct ASTNode *value;
+            struct AstNode *value;
         } return_stmt;
 
         struct {
-            struct ASTNode *condition;
-            struct ASTNode *then_branch;
-            struct ASTNode *else_branch;
+            struct AstNode *condition;
+            struct AstNode *then_branch;
+            struct AstNode *else_branch;
         } if_stmt;
 
         struct {
-            struct ASTNode *condition;
-            struct ASTNode *body;
+            struct AstNode *condition;
+            struct AstNode *body;
         } while_stmt;
 
         char *identifier;
-        int number;
+        int integer;
     } data;
-} ASTNode;
+};
 
-typedef struct {
-    Lexer *lexer;
-    Token *current_token;
-} Parser;
+struct Parser {
+    struct Vector *tokens;
+    size_t current_pos;
+};
 
-Parser *parser_new(Lexer *lexer);
-void parser_free(Parser *parser);
-ASTNode *parser_parse(Parser *parser);
-void ast_node_free(ASTNode *node);
+struct Vector *parse(struct Vector *tokens);
 
 #endif

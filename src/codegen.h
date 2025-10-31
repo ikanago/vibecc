@@ -12,6 +12,6 @@ typedef struct {
 
 CodeGenerator *codegen_new(FILE *output);
 void codegen_free(CodeGenerator *codegen);
-int codegen_generate(CodeGenerator *codegen, ASTNode *ast);
+int codegen_generate(CodeGenerator *codegen, AstNode *ast);
 
 #endif

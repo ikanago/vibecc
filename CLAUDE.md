@@ -22,3 +22,6 @@ For example, create a compiler that can only parse and emit assembly for simple 
 Then, add support for other arithmetic expressions, variables, functions, and control flow.
 
 On implementing a new feature, create a specification for the feature in the specs/ directory.
+
+## Notes for Implementation
+- Do not care about freeing memory; the compiler is not intended for long-running processes.
