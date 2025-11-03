@@ -122,10 +122,12 @@ static struct AstNode *parse_cast_expression(struct Parser *parser) {
 //   multiplicative-expression % cast-expression
 static struct AstNode *parse_multiplicative_expression(struct Parser *parser) {
     struct AstNode *lhs = parse_cast_expression(parser);
-    if (try_consume_token(parser, TOKEN_MULTIPLICATION)) {
+
+    while (try_consume_token(parser, TOKEN_MULTIPLICATION)) {
         struct AstNode *rhs = parse_cast_expression(parser);
-        return binary_operation(TOKEN_MULTIPLICATION, lhs, rhs);
+        lhs = binary_operation(TOKEN_MULTIPLICATION, lhs, rhs);
     }
+
     return lhs;
 }
 

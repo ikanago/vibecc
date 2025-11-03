@@ -25,4 +25,5 @@ function run() {
 
 run 42 "integer.c"
 run 6 "multiplication_simple.c"
+run 24 "multiplication_complex.c"
 echo -e "${COLOR_VALID}All tests passed.${COLOR_OFF}"
