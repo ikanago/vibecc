@@ -65,7 +65,7 @@ static struct Token *next_token(struct Lexer *lexer) {
     char current = peek_char(lexer);
 
     if (current == '\0') {
-        return token_new(TOKEN_EOF, NULL, line, column);
+        return token_new(TOKEN_EOF, "EOF", line, column);
     }
 
     if (isdigit(current)) {
@@ -113,7 +113,7 @@ static struct Token *next_token(struct Lexer *lexer) {
         case '-':
             return token_new(TOKEN_MINUS, NULL, line, column);
         case '*':
-            return token_new(TOKEN_MULTIPLY, NULL, line, column);
+            return token_new(TOKEN_MULTIPLICATION, NULL, line, column);
         case '/':
             return token_new(TOKEN_DIVIDE, NULL, line, column);
         case '(':
@@ -142,10 +142,10 @@ struct Vector *lex(const char *input) {
 
     struct Token *token = NULL;
     while ((token = next_token(lexer))) {
+        vector_push(tokens, token);
         if (token->type == TOKEN_EOF) {
             break;
         }
-        vector_push(tokens, token);
     }
 
     return tokens;

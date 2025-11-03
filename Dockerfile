@@ -7,6 +7,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         build-essential \
         clang-format \
         cmake \
-        gcc
+        gcc \
+        gdb
 
 WORKDIR /app

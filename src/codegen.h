@@ -5,6 +5,6 @@
 
 #include "parser.h"
 
-void generate(struct AstNode* node);
+void generate(struct AstNode *node);
 
 #endif

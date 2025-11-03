@@ -5,6 +5,7 @@
 
 enum ASTNodeType {
     AST_INTEGER,
+    AST_BINARY_OPERATION,
 };
 
 struct AstNode {
@@ -12,13 +13,13 @@ struct AstNode {
     union {
         struct {
             enum TokenType op;
-            struct AstNode* left;
-            struct AstNode* right;
+            struct AstNode *lhs;
+            struct AstNode *rhs;
         } binary_op;
 
         struct {
             enum TokenType op;
-            struct AstNode* operand;
+            struct AstNode *operand;
         } unary_op;
 
         int integer;
@@ -26,10 +27,10 @@ struct AstNode {
 };
 
 struct Parser {
-    struct Vector* tokens;
+    struct Vector *tokens;
     size_t current_pos;
 };
 
-struct AstNode* parse(struct Vector* tokens);
+struct AstNode *parse(struct Vector *tokens);
 
 #endif

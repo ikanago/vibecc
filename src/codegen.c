@@ -2,17 +2,49 @@
 
 #include "parser.h"
 
-static void generate_integer(struct AstNode* node) {
+static void generate_node(struct AstNode *node);
+
+static void generate_integer(struct AstNode *node) {
     printf("  push %d\n", node->data.integer);
 }
 
-void generate(struct AstNode* node) {
+static void genenrate_binary_operation(struct AstNode *node) {
+    generate_node(node->data.binary_op.lhs);
+    generate_node(node->data.binary_op.rhs);
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
+
+    switch (node->data.binary_op.op) {
+        case TOKEN_MULTIPLICATION:
+            printf("  mul rdi\n");
+            break;
+        default:
+            break;
+    }
+
+    printf("  push rax\n");
+}
+
+static void generate_node(struct AstNode *node) {
+    switch (node->type) {
+        case AST_INTEGER:
+            generate_integer(node);
+            break;
+        case AST_BINARY_OPERATION:
+            genenrate_binary_operation(node);
+            break;
+        default:
+            break;
+    }
+}
+
+void generate(struct AstNode *node) {
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    generate_integer(node);
+    generate_node(node);
     printf("  pop rax\n");
     printf("  jmp .Lreturn\n");
     printf(".Lreturn:\n");
