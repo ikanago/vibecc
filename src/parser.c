@@ -54,10 +54,10 @@ static struct AstNode *parse_constant(struct Parser *parser) {
 }
 
 // primary-expression:
-//   identifier
-//   constant
-//   string-literal
-//   ( expression )
+//     identifier
+//     constant
+//     string-literal
+//     ( expression )
 static struct AstNode *parse_primary_expression(struct Parser *parser) {
     struct AstNode *node;
     if ((node = parse_constant(parser))) {
@@ -67,18 +67,18 @@ static struct AstNode *parse_primary_expression(struct Parser *parser) {
 }
 
 // postfix-expression:
-//   primary-expression
-//   postfix-expression [ expression ]
-//   postfix-expression ( argument-expression-list_opt )
-//   postfix-expression . identifier
-//   postfix-expression -> identifier
-//   postfix-expression ++
-//   postfix-expression --
-//   ( type-name ) { initializer-list }
-//   ( type-name ) { initializer-list , }
+//     primary-expression
+//     postfix-expression [ expression ]
+//     postfix-expression ( argument-expression-list_opt )
+//     postfix-expression . identifier
+//     postfix-expression -> identifier
+//     postfix-expression ++
+//     postfix-expression --
+//     ( type-name ) { initializer-list }
+//     ( type-name ) { initializer-list , }
 // argument-expression-list:
-//   assignment-expression
-//   argument-expression-list , assignment-expression
+//     assignment-expression
+//     argument-expression-list , assignment-expression
 static struct AstNode *parse_postfix_expression(struct Parser *parser) {
     struct AstNode *node;
     if ((node = parse_primary_expression(parser))) {
@@ -88,14 +88,14 @@ static struct AstNode *parse_postfix_expression(struct Parser *parser) {
 }
 
 // unary-expression:
-//   postfix-expression
-//   ++ unary-expression
-//   -- unary-expression
-//   unary-operator cast-expression
-//   sizeof unary-expression
-//   sizeof ( type-name )
+//     postfix-expression
+//     ++ unary-expression
+//     -- unary-expression
+//     unary-operator cast-expression
+//     sizeof unary-expression
+//     sizeof ( type-name )
 // unary-operator: one of
-//   & * + - ~ !
+//     & * + - ~ !
 static struct AstNode *parse_unary_expression(struct Parser *parser) {
     struct AstNode *node;
     if ((node = parse_postfix_expression(parser))) {
@@ -105,8 +105,8 @@ static struct AstNode *parse_unary_expression(struct Parser *parser) {
 }
 
 // cast-expression:
-//   unary-expression
-//   ( type-name ) cast-expression
+//     unary-expression
+//     ( type-name ) cast-expression
 static struct AstNode *parse_cast_expression(struct Parser *parser) {
     struct AstNode *node;
     if ((node = parse_unary_expression(parser))) {
@@ -116,10 +116,10 @@ static struct AstNode *parse_cast_expression(struct Parser *parser) {
 }
 
 // multiplicative-expression:
-//   cast-expression
-//   multiplicative-expression * cast-expression
-//   multiplicative-expression / cast-expression
-//   multiplicative-expression % cast-expression
+//     cast-expression
+//     multiplicative-expression * cast-expression
+//     multiplicative-expression / cast-expression
+//     multiplicative-expression % cast-expression
 static struct AstNode *parse_multiplicative_expression(struct Parser *parser) {
     struct AstNode *lhs = parse_cast_expression(parser);
 
@@ -131,9 +131,25 @@ static struct AstNode *parse_multiplicative_expression(struct Parser *parser) {
     return lhs;
 }
 
+// additive-expression:
+//     multiplicative-expression
+//     additive-expression + multiplicative-expression
+//     additive-expression - multiplicative-expression
+
+static struct AstNode *parse_additive_expression(struct Parser *parser) {
+    struct AstNode *lhs = parse_multiplicative_expression(parser);
+
+    while (try_consume_token(parser, TOKEN_PLUS)) {
+        struct AstNode *rhs = parse_multiplicative_expression(parser);
+        lhs = binary_operation(TOKEN_PLUS, lhs, rhs);
+    }
+
+    return lhs;
+}
+
 struct AstNode *parse(struct Vector *tokens) {
     struct Parser parser;
     parser.current_pos = 0;
     parser.tokens = tokens;
-    return parse_multiplicative_expression(&parser);
+    return parse_additive_expression(&parser);
 }

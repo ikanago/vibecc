@@ -15,6 +15,9 @@ static void genenrate_binary_operation(struct AstNode *node) {
     printf("  pop rax\n");
 
     switch (node->data.binary_op.op) {
+        case TOKEN_PLUS:
+            printf("  add rax, rdi\n");
+            break;
         case TOKEN_MULTIPLICATION:
             printf("  mul rdi\n");
             break;
@@ -51,4 +54,5 @@ void generate(struct AstNode *node) {
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
     printf("  ret\n");
+    printf(".section .note.GNU-stack,\"\",@progbits\n");
 }

@@ -23,6 +23,9 @@ function run() {
     fi
 }
 
+run 3 "addition_simple.c"
+run 6 "addition_complex.c"
+run 7 "addition_multiplication.c"
 run 42 "integer.c"
 run 6 "multiplication_simple.c"
 run 24 "multiplication_complex.c"

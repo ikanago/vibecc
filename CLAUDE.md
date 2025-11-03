@@ -3,17 +3,19 @@ This is a simple C compiler written by C aiming to be self-hosted.
 We does not aim to be a full-featured compiler.
 
 ## Commands
+Prepend `./run` to run commands which relates to building, testing, and formatting the code.
+
 ### Build
 To set up the build environment, run:
 ```bash
-cmake -B build
+./run cmake -B build
 ```
 
 ### Test
-To run the tests, run:
+To run the integration tests, run:
 ```bash
-make -C build
-make test -C build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+./run make -C build
+./run make integration_tests -C build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 ```
 
 ## Plans for Development
