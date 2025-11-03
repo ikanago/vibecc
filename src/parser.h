@@ -3,14 +3,21 @@
 
 #include "lexer.h"
 
-enum ASTNodeType {
+enum AstNodeType {
     AST_INTEGER,
     AST_BINARY_OPERATION,
 };
 
 struct AstNode {
-    enum ASTNodeType type;
+    enum AstNodeType type;
     union {
+        int integer;
+
+        struct {
+            enum TokenType op;
+            struct AstNode *operand;
+        } unary_op;
+
         struct {
             enum TokenType op;
             struct AstNode *lhs;
@@ -18,11 +25,9 @@ struct AstNode {
         } binary_op;
 
         struct {
-            enum TokenType op;
-            struct AstNode *operand;
-        } unary_op;
-
-        int integer;
+            struct AstNode *external_declaration;
+            struct AstNode *rest;
+        } translation_unit;
     } data;
 };
 

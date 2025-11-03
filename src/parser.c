@@ -9,6 +9,9 @@ static struct Token *peek_token(struct Parser *parser) {
     return t;
 }
 
+// Returns 1 and proceed the position of current token by one if a type of the
+// current token is the expected `type`.
+// Or returns 0 without touching the position of current token.
 static int try_consume_token(struct Parser *parser, enum TokenType type) {
     struct Token *token = peek_token(parser);
     if (token->type == type) {
@@ -39,6 +42,17 @@ static struct AstNode *binary_operation(
     node->data.binary_op.op = op;
     node->data.binary_op.lhs = lhs;
     node->data.binary_op.rhs = rhs;
+    return node;
+}
+
+static struct AstNode *translation_unit(
+    struct AstNode *external_declaration, struct Astnode *rest
+) {
+    struct AstNode *node = malloc(sizeof(struct AstNode));
+    if (node == NULL) return NULL;
+
+    node->data.translation_unit.external_declaration = external_declaration;
+    node->data.translation_unit.rest = rest;
     return node;
 }
 
@@ -135,7 +149,6 @@ static struct AstNode *parse_multiplicative_expression(struct Parser *parser) {
 //     multiplicative-expression
 //     additive-expression + multiplicative-expression
 //     additive-expression - multiplicative-expression
-
 static struct AstNode *parse_additive_expression(struct Parser *parser) {
     struct AstNode *lhs = parse_multiplicative_expression(parser);
 
@@ -145,6 +158,20 @@ static struct AstNode *parse_additive_expression(struct Parser *parser) {
     }
 
     return lhs;
+}
+
+// external-declaration:
+//     function-definition
+//     declaration
+static struct AstNode *parse_external_declaration(struct Parser *parser) {}
+
+// translation-unit:
+//     external-declaration
+//     translation-unit external-declaration
+static struct AstNode *parse_translation_unit(struct Parser *parser) {
+    struct AstNode *node = parse_external_declaration(parser);
+    struct AstNode *rest = parse_translation_unit(parser);
+    return translation_unit(node, rest);
 }
 
 struct AstNode *parse(struct Vector *tokens) {
