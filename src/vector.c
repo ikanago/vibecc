@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-struct Vector *vector_new() {
+struct Vector *vector_new(void) {
     void **data = (void **)calloc(VECTOR_DEFAULT_CAPACITY, sizeof(void *));
     if (data == NULL) return NULL;
 
@@ -18,6 +18,7 @@ void vector_push(struct Vector *v, void *item) {
     if (v->size == v->capacity) {
         v->capacity *= 2;
         void **data = (void **)realloc(v->data, sizeof(void *) * v->capacity);
+        v->data = data;
     }
 
     v->data[v->size++] = item;

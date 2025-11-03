@@ -25,35 +25,8 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-file(GLOB_RECURSE SOURCES "src/*.c")
-list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
-
-add_executable(vibecc src/main.c ${SOURCES})
-
-target_include_directories(vibecc PRIVATE src)
-
-file(GLOB_RECURSE TEST_SOURCES "tests/*.cpp")
-if(TEST_SOURCES)
-    add_executable(vibecc_tests ${TEST_SOURCES} ${SOURCES})
-    target_link_libraries(vibecc_tests gtest_main)
-    target_include_directories(vibecc_tests PRIVATE src)
-    include(GoogleTest)
-    gtest_discover_tests(vibecc_tests)
-    add_custom_target(run_tests
-        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-        DEPENDS vibecc_tests
-    )
-endif()
-
-set_target_properties(vibecc PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-
-if(TARGET vibecc_tests)
-    set_target_properties(vibecc_tests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    )
-endif()
+add_subdirectory(src)
+add_subdirectory(tests)
 
 install(TARGETS vibecc DESTINATION bin)
 

@@ -141,9 +141,9 @@ struct Vector *lex(const char *input) {
     if (tokens == NULL) return NULL;
 
     struct Token *token = NULL;
-    while (token = next_token(lexer)) {
+    while ((token = next_token(lexer))) {
         if (token->type == TOKEN_EOF) {
-            return;
+            break;
         }
         vector_push(tokens, token);
     }

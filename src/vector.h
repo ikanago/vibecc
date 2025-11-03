@@ -11,7 +11,7 @@ struct Vector {
     size_t capacity;
 };
 
-struct Vector *vector_new();
+struct Vector *vector_new(void);
 void vector_push(struct Vector *vector, void *item);
 
 #endif  // VECTOR_H

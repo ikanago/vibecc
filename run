@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker run -it --rm \
+    --platform linux/amd64 \
+    --mount type=bind,source="$(pwd)",target=/app \
+    vibecc:latest \
+    $@
