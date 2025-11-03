@@ -41,13 +41,13 @@ if(CLANG_FORMAT_EXECUTABLE)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h"
     )
-    
+
     # Add clang-format target
     add_custom_target(format
         COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${FORMAT_SOURCES}
         VERBATIM
     )
-    
+
     # Add clang-format-check target to verify formatting without modifying files
     add_custom_target(format-check
         COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${FORMAT_SOURCES}
