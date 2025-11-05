@@ -45,16 +45,25 @@ static struct AstNode *binary_operation(
     return node;
 }
 
-static struct AstNode *translation_unit(
-    struct AstNode *external_declaration, struct Astnode *rest
-) {
+static struct AstNode *return_statement(struct AstNode *exp) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
 
-    node->data.translation_unit.external_declaration = external_declaration;
-    node->data.translation_unit.rest = rest;
+    node->type = AST_RETURN_STATEMENT;
+    node->data.return_statement.exp = exp;
     return node;
 }
+
+// static struct AstNode *translation_unit(
+//     struct AstNode *external_declaration, struct Astnode *rest
+// ) {
+//     struct AstNode *node = malloc(sizeof(struct AstNode));
+//     if (node == NULL) return NULL;
+
+//     node->data.translation_unit.external_declaration = external_declaration;
+//     node->data.translation_unit.rest = rest;
+//     return node;
+// }
 
 /// === Parse ===
 
@@ -160,23 +169,79 @@ static struct AstNode *parse_additive_expression(struct Parser *parser) {
     return lhs;
 }
 
+// expression:
+//     additive-expression
+static struct AstNode *parse_expression(struct Parser *parser) {
+    return parse_additive_expression(parser);
+}
+
+// type-specifier:
+//     int
+
+// declaration:
+//     declaration-specifiers init-declarator-listopt ;
+// declaration-specifiers:
+//     storage-class-specifier declaration-specifiersopt
+//     type-specifier declaration-specifiersopt
+//     type-qualifier declaration-specifiersopt
+// init-declarator-list:
+//     init-declarator
+//     init-declarator-list , init-declarator
+// init-declarator:
+//     declarator
+//     declarator = initializer
+
+// function-definition:
+//     declaration-specifiers declarator declaration-listopt compound-statement
+// declaration-list:
+//     declaration
+//     declaration-list declaration
+// static struct AstNode *parse_function_definition(struct Parser *parser) {}
+
+// jump-statement:
+//     continue ;
+//     break ;
+//     return expressionopt ;
+static struct AstNode *parse_jump_statement(struct Parser *parser) {
+    if (try_consume_token(parser, TOKEN_SEMICOLON)) {
+        return return_statement(NULL);
+    }
+
+    struct AstNode *exp = parse_expression(parser);
+    return return_statement(exp);
+}
+
+// statement:
+//    labeled-statement
+//    compound-statement
+//    expression-statement
+//    selection-statement
+//    iteration-statement
+//    jump-statement
+static struct AstNode *parse_statement(struct Parser *parser) {
+    if (try_consume_token(parser, TOKEN_RETURN)) {
+        return parse_jump_statement(parser);
+    }
+    return NULL;
+}
+
 // external-declaration:
 //     function-definition
 //     declaration
-static struct AstNode *parse_external_declaration(struct Parser *parser) {}
+// static struct AstNode *parse_external_declaration(struct Parser *parser) {}
 
 // translation-unit:
 //     external-declaration
 //     translation-unit external-declaration
-static struct AstNode *parse_translation_unit(struct Parser *parser) {
-    struct AstNode *node = parse_external_declaration(parser);
-    struct AstNode *rest = parse_translation_unit(parser);
-    return translation_unit(node, rest);
-}
+// static struct AstNode *parse_translation_unit(struct Parser *parser) {
+//     struct AstNode *node = parse_external_declaration(parser);
+//     struct AstNode *rest = parse_translation_unit(parser);
+//     return translation_unit(node, rest);
+// }
 
 struct AstNode *parse(struct Vector *tokens) {
     struct Parser parser;
     parser.current_pos = 0;
     parser.tokens = tokens;
-    return parse_additive_expression(&parser);
+    return parse_statement(&parser);
 }

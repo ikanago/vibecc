@@ -28,13 +28,26 @@ static void genenrate_binary_operation(struct AstNode *node) {
     printf("  push rax\n");
 }
 
+static void generate_return_statement(struct AstNode *node) {
+    generate_node(node->data.return_statement.exp);
+    printf("  pop rax\n");
+    printf("  jmp .Lreturn\n");
+}
+
 static void generate_node(struct AstNode *node) {
+    if (node == NULL) {
+        return;
+    }
+
     switch (node->type) {
         case AST_INTEGER:
             generate_integer(node);
             break;
         case AST_BINARY_OPERATION:
             genenrate_binary_operation(node);
+            break;
+        case AST_RETURN_STATEMENT:
+            generate_return_statement(node);
             break;
         default:
             break;
@@ -48,8 +61,6 @@ void generate(struct AstNode *node) {
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     generate_node(node);
-    printf("  pop rax\n");
-    printf("  jmp .Lreturn\n");
     printf(".Lreturn:\n");
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");

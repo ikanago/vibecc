@@ -18,12 +18,12 @@ static void print_node_inner(struct AstNode *node, int level) {
 
     switch (node->type) {
         case AST_INTEGER:
-            printf("Integer: %d", node->data.integer);
+            printf("integer: %d", node->data.integer);
             // TODO: output line number and column number, which requires them
             // to be included in AstNode
             break;
         case AST_BINARY_OPERATION:
-            printf("Binary Operation: ");
+            printf("binary operation: ");
             switch (node->data.binary_op.op) {
                 case TOKEN_PLUS:
                     printf("+\n");
@@ -43,6 +43,12 @@ static void print_node_inner(struct AstNode *node, int level) {
             }
             print_node_inner(node->data.binary_op.lhs, level + 1);
             print_node_inner(node->data.binary_op.rhs, level + 1);
+            break;
+        case AST_RETURN_STATEMENT:
+            printf("return statement:\n");
+            if (node->data.return_statement.exp) {
+                print_node_inner(node->data.return_statement.exp, level + 1);
+            }
             break;
         default:
             printf("N/A");

@@ -6,6 +6,7 @@
 enum AstNodeType {
     AST_INTEGER,
     AST_BINARY_OPERATION,
+    AST_RETURN_STATEMENT,
 };
 
 struct AstNode {
@@ -23,6 +24,10 @@ struct AstNode {
             struct AstNode *lhs;
             struct AstNode *rhs;
         } binary_op;
+
+        struct {
+            struct AstNode *exp;
+        } return_statement;
 
         struct {
             struct AstNode *external_declaration;
