@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include "codegen.h"
@@ -36,14 +37,27 @@ char *read_file(char *file_path) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
-        exit(1);
+    int should_dump_token = 0;
+    int should_dump_node = 0;
+    for (int i = 0; i < argc; i++) {
+        if (!strcmp(argv[i], "--dump-token")) {
+            should_dump_token = 1;
+        } else if (!strcmp(argv[i], "--dump-node")) {
+            should_dump_node = 1;
+        }
     }
 
-    const char *input = read_file(argv[1]);
+    const char *input = read_file(argv[argc - 1]);
     struct Vector *tokens = lex(input);
+    if (should_dump_token) {
+        print_tokens(tokens);
+    }
+
     struct AstNode *node = parse(tokens);
+    if (should_dump_node) {
+        print_node(node);
+    }
+
     generate(node);
 
     return 0;
