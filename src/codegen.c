@@ -30,8 +30,17 @@ static void genenrate_binary_operation(struct AstNode *node) {
 
 static void generate_return_statement(struct AstNode *node) {
     generate_node(node->data.return_statement.exp);
+    // Is it OK to pop here even if exp is NULL?
     printf("  pop rax\n");
     printf("  jmp .Lreturn\n");
+}
+
+static void generate_compound_statement(struct AstNode *node) {
+    struct Vector *block_items = node->data.compound_statement.block_items;
+    for (size_t i = 0; i < block_items->size; i++) {
+        struct AstNode *block_item = block_items->data[i];
+        generate_node(block_item);
+    }
 }
 
 static void generate_node(struct AstNode *node) {
@@ -45,6 +54,9 @@ static void generate_node(struct AstNode *node) {
             break;
         case AST_BINARY_OPERATION:
             genenrate_binary_operation(node);
+            break;
+        case AST_COMPOUND_STATEMENT:
+            generate_compound_statement(node);
             break;
         case AST_RETURN_STATEMENT:
             generate_return_statement(node);

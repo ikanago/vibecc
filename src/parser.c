@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+static struct AstNode *parse_statement(struct Parser *parser);
+
 // === Token manipulations ===
 
 static struct Token *peek_token(struct Parser *parser) {
@@ -42,6 +44,15 @@ static struct AstNode *binary_operation(
     node->data.binary_op.op = op;
     node->data.binary_op.lhs = lhs;
     node->data.binary_op.rhs = rhs;
+    return node;
+}
+
+static struct AstNode *compound_statement(struct Vector *block_items) {
+    struct AstNode *node = malloc(sizeof(struct AstNode));
+    if (node == NULL) return NULL;
+
+    node->type = AST_COMPOUND_STATEMENT;
+    node->data.compound_statement.block_items = block_items;
     return node;
 }
 
@@ -198,6 +209,22 @@ static struct AstNode *parse_expression(struct Parser *parser) {
 //     declaration-list declaration
 // static struct AstNode *parse_function_definition(struct Parser *parser) {}
 
+// compound-statement:
+//     { block-item-listopt }
+// block-item-list:
+//     block-item
+//     block-item-list block-item
+// block-item:
+//     declaration
+//     statement
+static struct AstNode *parse_compound_statement(struct Parser *parser) {
+    struct Vector *block_items = vector_new();
+    while (!try_consume_token(parser, TOKEN_RBRACE)) {
+        vector_push(block_items, parse_statement(parser));
+    }
+    return compound_statement(block_items);
+}
+
 // jump-statement:
 //     continue ;
 //     break ;
@@ -208,6 +235,7 @@ static struct AstNode *parse_jump_statement(struct Parser *parser) {
     }
 
     struct AstNode *exp = parse_expression(parser);
+    try_consume_token(parser, TOKEN_SEMICOLON);
     return return_statement(exp);
 }
 
@@ -219,6 +247,9 @@ static struct AstNode *parse_jump_statement(struct Parser *parser) {
 //    iteration-statement
 //    jump-statement
 static struct AstNode *parse_statement(struct Parser *parser) {
+    if (try_consume_token(parser, TOKEN_LBRACE)) {
+        return parse_compound_statement(parser);
+    }
     if (try_consume_token(parser, TOKEN_RETURN)) {
         return parse_jump_statement(parser);
     }

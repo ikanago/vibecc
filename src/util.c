@@ -18,7 +18,7 @@ static void print_node_inner(struct AstNode *node, int level) {
 
     switch (node->type) {
         case AST_INTEGER:
-            printf("integer: %d", node->data.integer);
+            printf("integer: %d\n", node->data.integer);
             // TODO: output line number and column number, which requires them
             // to be included in AstNode
             break;
@@ -44,6 +44,15 @@ static void print_node_inner(struct AstNode *node, int level) {
             print_node_inner(node->data.binary_op.lhs, level + 1);
             print_node_inner(node->data.binary_op.rhs, level + 1);
             break;
+        case AST_COMPOUND_STATEMENT:
+            printf("compound statement:\n");
+            struct Vector *block_items =
+                node->data.compound_statement.block_items;
+            for (size_t i = 0; i < block_items->size; i++) {
+                struct AstNode *block_item = block_items->data[i];
+                print_node_inner(block_item, level + 1);
+            }
+            break;
         case AST_RETURN_STATEMENT:
             printf("return statement:\n");
             if (node->data.return_statement.exp) {
@@ -51,10 +60,10 @@ static void print_node_inner(struct AstNode *node, int level) {
             }
             break;
         default:
-            printf("N/A");
+            printf("N/A\n");
             break;
     }
-    printf("\n");
+    // printf("\n");
 }
 
 void print_node(struct AstNode *node) { print_node_inner(node, 0); }

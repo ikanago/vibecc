@@ -6,6 +6,7 @@
 enum AstNodeType {
     AST_INTEGER,
     AST_BINARY_OPERATION,
+    AST_COMPOUND_STATEMENT,
     AST_RETURN_STATEMENT,
 };
 
@@ -24,6 +25,10 @@ struct AstNode {
             struct AstNode *lhs;
             struct AstNode *rhs;
         } binary_op;
+
+        struct {
+            struct Vector *block_items;
+        } compound_statement;
 
         struct {
             struct AstNode *exp;
