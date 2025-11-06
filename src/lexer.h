@@ -5,7 +5,7 @@
 
 #include "vector.h"
 
-enum TokenType {
+enum TokenKind {
     TOKEN_EOF,
     TOKEN_INTEGER,
     TOKEN_IDENTIFIER,
@@ -33,7 +33,7 @@ enum TokenType {
 };
 
 struct Token {
-    enum TokenType type;
+    enum TokenKind kind;
     char *value;
     int line;    // 1-indexed
     int column;  // 1-indexed

@@ -48,7 +48,7 @@ static void generate_node(struct AstNode *node) {
         return;
     }
 
-    switch (node->type) {
+    switch (node->kind) {
         case AST_INTEGER:
             generate_integer(node);
             break;

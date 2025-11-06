@@ -44,12 +44,12 @@ static void skip_whitespace(struct Lexer *lexer) {
 }
 
 static struct Token *token_new(
-    enum TokenType type, const char *value, int line, int column
+    enum TokenKind kind, const char *value, int line, int column
 ) {
     struct Token *token = malloc(sizeof(struct Token));
     if (!token) return NULL;
 
-    token->type = type;
+    token->kind = kind;
     token->value = value ? strdup(value) : NULL;
     token->line = line;
     token->column = column;
@@ -90,19 +90,19 @@ static struct Token *next_token(struct Lexer *lexer) {
         strncpy(value, lexer->input + start, length);
         value[length] = '\0';
 
-        enum TokenType type = TOKEN_IDENTIFIER;
+        enum TokenKind kind = TOKEN_IDENTIFIER;
         if (strcmp(value, "int") == 0)
-            type = TOKEN_INT;
+            kind = TOKEN_INT;
         else if (strcmp(value, "return") == 0)
-            type = TOKEN_RETURN;
+            kind = TOKEN_RETURN;
         else if (strcmp(value, "if") == 0)
-            type = TOKEN_IF;
+            kind = TOKEN_IF;
         else if (strcmp(value, "else") == 0)
-            type = TOKEN_ELSE;
+            kind = TOKEN_ELSE;
         else if (strcmp(value, "while") == 0)
-            type = TOKEN_WHILE;
+            kind = TOKEN_WHILE;
 
-        return token_new(type, value, line, column);
+        return token_new(kind, value, line, column);
     }
 
     consume_token(lexer);
@@ -143,7 +143,7 @@ struct Vector *lex(const char *input) {
     struct Token *token = NULL;
     while ((token = next_token(lexer))) {
         vector_push(tokens, token);
-        if (token->type == TOKEN_EOF) {
+        if (token->kind == TOKEN_EOF) {
             break;
         }
     }

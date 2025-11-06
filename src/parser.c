@@ -11,12 +11,12 @@ static struct Token *peek_token(struct Parser *parser) {
     return t;
 }
 
-// Returns 1 and proceed the position of current token by one if a type of the
-// current token is the expected `type`.
+// Returns 1 and proceed the position of current token by one if a kind of the
+// current token is the expected `kind`.
 // Or returns 0 without touching the position of current token.
-static int try_consume_token(struct Parser *parser, enum TokenType type) {
+static int try_consume_token(struct Parser *parser, enum TokenKind kind) {
     struct Token *token = peek_token(parser);
-    if (token->type == type) {
+    if (token->kind == kind) {
         parser->current_pos++;
         return 1;
     }
@@ -29,18 +29,18 @@ static struct AstNode *integer_constant(struct Token *token) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
 
-    node->type = AST_INTEGER;
+    node->kind = AST_INTEGER;
     node->data.integer = atoi(token->value);
     return node;
 }
 
 static struct AstNode *binary_operation(
-    enum TokenType op, struct AstNode *lhs, struct AstNode *rhs
+    enum TokenKind op, struct AstNode *lhs, struct AstNode *rhs
 ) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
 
-    node->type = AST_BINARY_OPERATION;
+    node->kind = AST_BINARY_OPERATION;
     node->data.binary_op.op = op;
     node->data.binary_op.lhs = lhs;
     node->data.binary_op.rhs = rhs;
@@ -51,7 +51,7 @@ static struct AstNode *compound_statement(struct Vector *block_items) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
 
-    node->type = AST_COMPOUND_STATEMENT;
+    node->kind = AST_COMPOUND_STATEMENT;
     node->data.compound_statement.block_items = block_items;
     return node;
 }
@@ -60,7 +60,7 @@ static struct AstNode *return_statement(struct AstNode *exp) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
 
-    node->type = AST_RETURN_STATEMENT;
+    node->kind = AST_RETURN_STATEMENT;
     node->data.return_statement.exp = exp;
     return node;
 }
@@ -80,7 +80,7 @@ static struct AstNode *return_statement(struct AstNode *exp) {
 
 static struct AstNode *parse_constant(struct Parser *parser) {
     struct Token *token = peek_token(parser);
-    if (token->type == TOKEN_INTEGER) {
+    if (token->kind == TOKEN_INTEGER) {
         parser->current_pos++;
         return integer_constant(token);
     }
@@ -186,21 +186,24 @@ static struct AstNode *parse_expression(struct Parser *parser) {
     return parse_additive_expression(parser);
 }
 
+// declarator:
+//     pointeropt direct-declarator
+// direct-declarator:
+//     identifier
+
 // type-specifier:
 //     int
 
 // declaration:
-//     declaration-specifiers init-declarator-listopt ;
+//     declaration-specifiers init-declarator ;
 // declaration-specifiers:
 //     storage-class-specifier declaration-specifiersopt
 //     type-specifier declaration-specifiersopt
 //     type-qualifier declaration-specifiersopt
-// init-declarator-list:
-//     init-declarator
-//     init-declarator-list , init-declarator
 // init-declarator:
 //     declarator
 //     declarator = initializer
+// static struct AstNode *parse_declaration(struct Parser *parser) {}
 
 // function-definition:
 //     declaration-specifiers declarator declaration-listopt compound-statement

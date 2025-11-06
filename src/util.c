@@ -16,7 +16,7 @@ static void print_node_inner(struct AstNode *node, int level) {
         printf("  ");
     }
 
-    switch (node->type) {
+    switch (node->kind) {
         case AST_INTEGER:
             printf("integer: %d\n", node->data.integer);
             // TODO: output line number and column number, which requires them

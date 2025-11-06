@@ -3,7 +3,7 @@
 
 #include "lexer.h"
 
-enum AstNodeType {
+enum AstNodeKind {
     AST_INTEGER,
     AST_BINARY_OPERATION,
     AST_COMPOUND_STATEMENT,
@@ -11,17 +11,17 @@ enum AstNodeType {
 };
 
 struct AstNode {
-    enum AstNodeType type;
+    enum AstNodeKind kind;
     union {
         int integer;
 
         struct {
-            enum TokenType op;
+            enum TokenKind op;
             struct AstNode *operand;
         } unary_op;
 
         struct {
-            enum TokenType op;
+            enum TokenKind op;
             struct AstNode *lhs;
             struct AstNode *rhs;
         } binary_op;
