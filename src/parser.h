@@ -41,6 +41,15 @@ struct AstNode {
     } data;
 };
 
+enum TypeKind {
+    TypeInt,
+};
+
+struct Type {
+    enum TypeKind kind;
+    int size;
+};
+
 struct Parser {
     struct Vector *tokens;
     size_t current_pos;

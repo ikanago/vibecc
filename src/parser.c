@@ -25,6 +25,22 @@ static int try_consume_token(struct Parser *parser, enum TokenKind kind) {
 
 // === Node factories ===
 
+static struct Type *type(enum TypeKind kind) {
+    struct Type *type = malloc(sizeof(struct Type));
+    if (type == NULL) return NULL;
+
+    type->kind = kind;
+    switch (kind) {
+        case TypeInt:
+            type->size = 4;
+            break;
+        default:
+            type->size = 0;
+            break;
+    }
+    return type;
+}
+
 static struct AstNode *integer_constant(struct Token *token) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     if (node == NULL) return NULL;
@@ -193,6 +209,12 @@ static struct AstNode *parse_expression(struct Parser *parser) {
 
 // type-specifier:
 //     int
+static struct Type *parse_type_specifier(struct Parser *parser) {
+    if (try_consume_token(parser, TOKEN_INT)) {
+        return type(TypeInt);
+    }
+    return NULL;
+}
 
 // declaration:
 //     declaration-specifiers init-declarator ;
