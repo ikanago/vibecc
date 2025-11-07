@@ -268,12 +268,10 @@ struct AstNode *parse_declarator(struct Parser *parser) {
 static struct AstNode *parse_declaration(struct Parser *parser) {
     struct Type *type = parse_type_specifier(parser);
     struct AstNode *declarator = parse_declarator(parser);
-    try_consume_token(parser, TOKEN_EQ);
+    try_consume_token(parser, TOKEN_ASSIGN);
     struct AstNode *initializer = parse_constant(parser);
     try_consume_token(parser, TOKEN_SEMICOLON);
-    struct AstNode *node = declaration(type, declarator, initializer);
-    print_node(node);
-    return node;
+    return declaration(type, declarator, initializer);
 }
 
 // function-definition:

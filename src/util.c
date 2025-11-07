@@ -57,7 +57,7 @@ static void print_node_inner(struct AstNode *node, int level) {
             printf("declarator: %s\n", node->data.declarator.identifier);
             break;
         case AST_DECLARATION:
-            printf("delcaration:");
+            printf("delcaration:\n");
             print_type(node->data.declaration.type, level + 1);
             print_node_inner(node->data.declaration.declarator, level + 1);
             print_node_inner(node->data.declaration.initializer, level + 1);
