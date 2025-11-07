@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include "util.h"
+
 static struct AstNode *parse_statement(struct Parser *parser);
 
 // === Token manipulations ===
@@ -18,6 +20,14 @@ static int try_consume_token(struct Parser *parser, enum TokenKind kind) {
     struct Token *token = peek_token(parser);
     if (token->kind == kind) {
         parser->current_pos++;
+        return 1;
+    }
+    return 0;
+}
+
+static int check_token(struct Parser *parser, enum TokenKind kind) {
+    struct Token *token = peek_token(parser);
+    if (token->kind == kind) {
         return 1;
     }
     return 0;
@@ -60,6 +70,28 @@ static struct AstNode *binary_operation(
     node->data.binary_op.op = op;
     node->data.binary_op.lhs = lhs;
     node->data.binary_op.rhs = rhs;
+    return node;
+}
+
+static struct AstNode *declarator(char *identifer) {
+    struct AstNode *node = malloc(sizeof(struct AstNode));
+    if (node == NULL) return NULL;
+
+    node->kind = AST_DECLARATOR;
+    node->data.declarator.identifier = identifer;
+    return node;
+}
+
+static struct AstNode *declaration(
+    struct Type *type, struct AstNode *declarator, struct AstNode *initializer
+) {
+    struct AstNode *node = malloc(sizeof(struct AstNode));
+    if (node == NULL) return NULL;
+
+    node->kind = AST_DECLARATION;
+    node->data.declaration.type = type;
+    node->data.declaration.declarator = declarator;
+    node->data.declaration.initializer = initializer;
     return node;
 }
 
@@ -202,16 +234,24 @@ static struct AstNode *parse_expression(struct Parser *parser) {
     return parse_additive_expression(parser);
 }
 
-// declarator:
-//     pointeropt direct-declarator
-// direct-declarator:
-//     identifier
-
 // type-specifier:
 //     int
 static struct Type *parse_type_specifier(struct Parser *parser) {
     if (try_consume_token(parser, TOKEN_INT)) {
         return type(TypeInt);
+    }
+    return NULL;
+}
+
+// declarator:
+//     pointeropt direct-declarator
+// direct-declarator:
+//     identifier
+struct AstNode *parse_declarator(struct Parser *parser) {
+    struct Token *token = peek_token(parser);
+    if (token->kind == TOKEN_IDENTIFIER) {
+        parser->current_pos++;
+        return declarator(token->value);
     }
     return NULL;
 }
@@ -225,7 +265,16 @@ static struct Type *parse_type_specifier(struct Parser *parser) {
 // init-declarator:
 //     declarator
 //     declarator = initializer
-// static struct AstNode *parse_declaration(struct Parser *parser) {}
+static struct AstNode *parse_declaration(struct Parser *parser) {
+    struct Type *type = parse_type_specifier(parser);
+    struct AstNode *declarator = parse_declarator(parser);
+    try_consume_token(parser, TOKEN_EQ);
+    struct AstNode *initializer = parse_constant(parser);
+    try_consume_token(parser, TOKEN_SEMICOLON);
+    struct AstNode *node = declaration(type, declarator, initializer);
+    print_node(node);
+    return node;
+}
 
 // function-definition:
 //     declaration-specifiers declarator declaration-listopt compound-statement
@@ -277,6 +326,9 @@ static struct AstNode *parse_statement(struct Parser *parser) {
     }
     if (try_consume_token(parser, TOKEN_RETURN)) {
         return parse_jump_statement(parser);
+    }
+    if (check_token(parser, TOKEN_INT)) {
+        return parse_declaration(parser);
     }
     return NULL;
 }

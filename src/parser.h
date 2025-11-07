@@ -6,6 +6,8 @@
 enum AstNodeKind {
     AST_INTEGER,
     AST_BINARY_OPERATION,
+    AST_DECLARATOR,
+    AST_DECLARATION,
     AST_COMPOUND_STATEMENT,
     AST_RETURN_STATEMENT,
 };
@@ -25,6 +27,16 @@ struct AstNode {
             struct AstNode *lhs;
             struct AstNode *rhs;
         } binary_op;
+
+        struct {
+            char *identifier;
+        } declarator;
+
+        struct {
+            struct Type *type;
+            struct AstNode *declarator;
+            struct AstNode *initializer;
+        } declaration;
 
         struct {
             struct Vector *block_items;

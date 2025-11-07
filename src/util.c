@@ -11,6 +11,15 @@ void print_tokens(struct Vector *tokens) {
         printf("(%03d, %03d) %s\n", t->line, t->column, t->value);
     }
 }
+
+static void print_type(struct Type *type, int level) {
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+
+    printf("type: %d (size: %d)\n", type->kind, type->size);
+}
+
 static void print_node_inner(struct AstNode *node, int level) {
     for (int i = 0; i < level; i++) {
         printf("  ");
@@ -43,6 +52,15 @@ static void print_node_inner(struct AstNode *node, int level) {
             }
             print_node_inner(node->data.binary_op.lhs, level + 1);
             print_node_inner(node->data.binary_op.rhs, level + 1);
+            break;
+        case AST_DECLARATOR:
+            printf("declarator: %s\n", node->data.declarator.identifier);
+            break;
+        case AST_DECLARATION:
+            printf("delcaration:");
+            print_type(node->data.declaration.type, level + 1);
+            print_node_inner(node->data.declaration.declarator, level + 1);
+            print_node_inner(node->data.declaration.initializer, level + 1);
             break;
         case AST_COMPOUND_STATEMENT:
             printf("compound statement:\n");
