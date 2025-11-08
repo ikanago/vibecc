@@ -25,4 +25,5 @@ jobs:
       - run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
       - run: |
+          make -C build -j unit_test
           make -C build -j integration_tests

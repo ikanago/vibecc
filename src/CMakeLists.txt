@@ -2,6 +2,7 @@
 set(VIBECC_LIB_SOURCES
     codegen.c
     lexer.c
+    map.c
     parser.c
     util.c
     vector.c
@@ -11,6 +12,7 @@ set(VIBECC_LIB_SOURCES
 set(VIBECC_LIB_HEADERS
     codegen.h
     lexer.h
+    map.h
     parser.h
     util.h
     vector.h

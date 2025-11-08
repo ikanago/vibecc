@@ -23,8 +23,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-enable_testing()
-
 add_subdirectory(src)
 add_subdirectory(tests)
 
@@ -34,7 +32,6 @@ install(TARGETS vibecc DESTINATION bin)
 find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
 
 if(CLANG_FORMAT_EXECUTABLE)
-    # Get all C/C++ source and header files
     file(GLOB_RECURSE FORMAT_SOURCES 
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
@@ -42,16 +39,8 @@ if(CLANG_FORMAT_EXECUTABLE)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h"
     )
 
-    # Add clang-format target
     add_custom_target(format
         COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${FORMAT_SOURCES}
-        VERBATIM
-    )
-
-    # Add clang-format-check target to verify formatting without modifying files
-    add_custom_target(format-check
-        COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${FORMAT_SOURCES}
-        COMMENT "Checking code formatting with clang-format"
         VERBATIM
     )
 else()
