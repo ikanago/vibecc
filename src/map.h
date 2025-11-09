@@ -9,13 +9,14 @@ extern "C" {
 
 struct Map {
     char **keys;
-    int *values;
+    int **values;
+    size_t size;
     size_t capacity;
 };
 
 struct Map *map_new();
-int map_get(struct Map *map, const char *key);
-void map_set(struct Map *map, const char *key, const int value);
+int *map_get(struct Map *map, const char *key);
+void map_set(struct Map *map, const char *key, int *value);
 
 #ifdef __cplusplus
 }

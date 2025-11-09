@@ -12,9 +12,13 @@ To set up the build environment, run:
 ```
 
 ### Test
-To run the integration tests, run:
+Run the unit tests
 ```bash
-./run make -C build
+./run make unit_tests -C build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+```
+
+Run the integration tests
+```bash
 ./run make integration_tests -C build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 ```
 

@@ -6,21 +6,24 @@
 
 #define MAP_DEFAULT_CAPACITY 16
 
-struct Map *map_new() {
+struct Map *map_new_inner(size_t capacity) {
     struct Map *map = calloc(1, sizeof(struct Map));
     if (map == NULL) return NULL;
 
-    char **keys = calloc(MAP_DEFAULT_CAPACITY, sizeof(char *));
+    char **keys = calloc(capacity, sizeof(char *));
     if (keys == NULL) return NULL;
 
-    int *values = calloc(MAP_DEFAULT_CAPACITY, sizeof(int));
+    int **values = calloc(capacity, sizeof(int *));
     if (values == NULL) return NULL;
 
     map->keys = keys;
     map->values = values;
-    map->capacity = MAP_DEFAULT_CAPACITY;
+    map->size = 0;
+    map->capacity = capacity;
     return map;
 }
+
+struct Map *map_new() { return map_new_inner(MAP_DEFAULT_CAPACITY); }
 
 static int hash(const char *key, int mod) {
     int hashed = 0;
@@ -40,17 +43,48 @@ static int find_slot(struct Map *map, const char *key) {
     return i;
 }
 
-int map_get(struct Map *map, const char *key) {
+int *map_get(struct Map *map, const char *key) {
     int i = find_slot(map, key);
     return map->values[i];
 }
 
-void map_set(struct Map *map, const char *key, const int value) {
-    int i = find_slot(map, key);
+int should_grow(struct Map *map) { return map->size > map->capacity * 6 / 10; }
 
+static void map_free(struct Map *map) {
+    free(map->keys);
+    free(map->values);
+    free(map);
+}
+
+static void resize(struct Map *map) {
+    struct Map *map2 = map_new_inner(map->capacity * 2);
+
+    for (size_t i = 0; i < map->capacity; i++) {
+        if (map->keys[i] == NULL) {
+            continue;
+        }
+
+        map_set(map2, map->keys[i], map->values[i]);
+    }
+
+    map->keys = map2->keys;
+    map->values = map2->values;
+    map->size = map2->size;
+    map->capacity = map2->capacity;
+    map_free(map2);
+}
+
+void map_set(struct Map *map, const char *key, int *value) {
+    if (should_grow(map)) {
+        resize(map);
+    }
+
+    int i = find_slot(map, key);
     int len = strlen(key);
     char *new_key = calloc(len + 1, sizeof(char));
     strncpy(new_key, key, len);
     map->keys[i] = new_key;
+
     map->values[i] = value;
+    map->size++;
 }
