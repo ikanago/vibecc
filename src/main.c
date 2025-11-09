@@ -39,15 +39,24 @@ char *read_file(char *file_path) {
 int main(int argc, char **argv) {
     int should_dump_token = 0;
     int should_dump_node = 0;
+    int is_raw = 0;
     for (int i = 0; i < argc; i++) {
         if (!strcmp(argv[i], "--dump-token")) {
             should_dump_token = 1;
         } else if (!strcmp(argv[i], "--dump-node")) {
             should_dump_node = 1;
+        } else if (!strcmp(argv[i], "-c")) {
+            is_raw = 1;
         }
     }
 
-    const char *input = read_file(argv[argc - 1]);
+    char *input;
+    if (is_raw) {
+        input = argv[argc - 1];
+    } else {
+        input = read_file(argv[argc - 1]);
+    }
+
     struct Vector *tokens = lex(input);
     if (should_dump_token) {
         print_tokens(tokens);
