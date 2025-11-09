@@ -48,14 +48,6 @@ int *map_get(struct Map *map, const char *key) {
     return map->values[i];
 }
 
-int should_grow(struct Map *map) { return map->size > map->capacity * 6 / 10; }
-
-static void map_free(struct Map *map) {
-    free(map->keys);
-    free(map->values);
-    free(map);
-}
-
 static void resize(struct Map *map) {
     struct Map *map2 = map_new_inner(map->capacity * 2);
 
@@ -63,15 +55,21 @@ static void resize(struct Map *map) {
         if (map->keys[i] == NULL) {
             continue;
         }
-
         map_set(map2, map->keys[i], map->values[i]);
+        free(map->keys[i]);
     }
 
+    free(map->keys);
+    free(map->values);
     map->keys = map2->keys;
     map->values = map2->values;
     map->size = map2->size;
     map->capacity = map2->capacity;
-    map_free(map2);
+    free(map2);
+}
+
+static int should_grow(struct Map *map) {
+    return map->size > map->capacity * 6 / 10;
 }
 
 void map_set(struct Map *map, const char *key, int *value) {

@@ -37,11 +37,47 @@ TEST(MapTest, ResizeOnce) {
     int values[n_entries];
     for (int i = 0; i < n_entries; i++) {
         values[i] = i * 17 % 100;
-        sprintf(buf[i], "test%d", values[i]);
+        sprintf(buf[i], "test%02d", values[i]);
         map_set(map, buf[i], values + i);
     }
     for (int i = 0; i < n_entries; i++) {
         int n = i * 17 % 100;
+        int *value = map_get(map, buf[i]);
+        ASSERT_EQ(n, *value);
+    }
+}
+
+TEST(MapTest, ResizeTwice) {
+    struct Map *map = map_new();
+    int n_entries = map->capacity + 5;
+
+    char buf[n_entries][7];
+    int values[n_entries];
+    for (int i = 0; i < n_entries; i++) {
+        values[i] = i * 17 % 100;
+        sprintf(buf[i], "test%02d", values[i]);
+        map_set(map, buf[i], values + i);
+    }
+    for (int i = 0; i < n_entries; i++) {
+        int n = i * 17 % 100;
+        int *value = map_get(map, buf[i]);
+        ASSERT_EQ(n, *value);
+    }
+}
+
+TEST(MapTest, SetMany) {
+    struct Map *map = map_new();
+    int n_entries = 100;
+
+    char buf[n_entries][8];
+    int values[n_entries];
+    for (int i = 0; i < n_entries; i++) {
+        values[i] = i * 17 % 1000;
+        sprintf(buf[i], "test%03d", values[i]);
+        map_set(map, buf[i], values + i);
+    }
+    for (int i = 0; i < n_entries; i++) {
+        int n = i * 17 % 1000;
         int *value = map_get(map, buf[i]);
         ASSERT_EQ(n, *value);
     }
