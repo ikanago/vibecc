@@ -19,7 +19,7 @@ function run() {
     fi
 }
 
-run 42 ' { return 42; }'
+run 42 '{ return 42; }'
 run 3 '{ return 1 + 2; }' 
 run 6 '{ return 1 + 2 + 3; }'
 run 7 '{ return 1 + 2 * 3; }'

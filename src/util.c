@@ -10,6 +10,7 @@ void print_tokens(struct Vector *tokens) {
         struct Token *t = tokens->data[i];
         printf("(%03d, %03d) %s\n", t->line, t->column, t->value);
     }
+    printf("\n");
 }
 
 static void print_type(struct Type *type, int level) {
@@ -64,8 +65,7 @@ static void print_node_inner(struct AstNode *node, int level) {
             break;
         case AST_COMPOUND_STATEMENT:
             printf("compound statement:\n");
-            struct Vector *block_items =
-                node->data.compound_statement.block_items;
+            struct Vector *block_items = node->data.compound_statement.block_items;
             for (size_t i = 0; i < block_items->size; i++) {
                 struct AstNode *block_item = block_items->data[i];
                 print_node_inner(block_item, level + 1);
@@ -81,7 +81,9 @@ static void print_node_inner(struct AstNode *node, int level) {
             printf("N/A\n");
             break;
     }
-    // printf("\n");
 }
 
-void print_node(struct AstNode *node) { print_node_inner(node, 0); }
+void print_node(struct AstNode *node) {
+    print_node_inner(node, 0);
+    printf("\n");
+}

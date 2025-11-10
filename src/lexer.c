@@ -43,9 +43,7 @@ static void skip_whitespace(struct Lexer *lexer) {
     }
 }
 
-static struct Token *token_new(
-    enum TokenKind kind, const char *value, int line, int column
-) {
+static struct Token *token_new(enum TokenKind kind, const char *value, int line, int column) {
     struct Token *token = malloc(sizeof(struct Token));
     if (!token) return NULL;
 

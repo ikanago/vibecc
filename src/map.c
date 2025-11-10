@@ -23,7 +23,9 @@ struct Map *map_new_inner(size_t capacity) {
     return map;
 }
 
-struct Map *map_new() { return map_new_inner(MAP_DEFAULT_CAPACITY); }
+struct Map *map_new() {
+    return map_new_inner(MAP_DEFAULT_CAPACITY);
+}
 
 static int hash(const char *key, int mod) {
     int hashed = 0;

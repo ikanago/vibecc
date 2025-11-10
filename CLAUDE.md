@@ -31,3 +31,5 @@ On implementing a new feature, create a specification for the feature in the spe
 
 ## Notes for Implementation
 - Do not care about freeing memory; the compiler is not intended for long-running processes.
+- This is a toy project. you don't have to focus on reliablity
+    - Omit some error handlings such as malloc

@@ -2,6 +2,16 @@
 #define PARSER_H
 
 #include "lexer.h"
+#include "map.h"
+
+// Scope manages an offset of each local variable in a scope.
+struct Scope {
+    struct Map *offsets;
+    int current_offset;
+};
+
+struct Scope *scope_new();
+int *scope_add_var(struct Scope *scope, const char *name, int offset);
 
 enum AstNodeKind {
     AST_INTEGER,
@@ -36,10 +46,12 @@ struct AstNode {
             struct Type *type;
             struct AstNode *declarator;
             struct AstNode *initializer;
+            int offset;
         } declaration;
 
         struct {
             struct Vector *block_items;
+            struct Scope *scope;
         } compound_statement;
 
         struct {
@@ -65,6 +77,7 @@ struct Type {
 struct Parser {
     struct Vector *tokens;
     size_t current_pos;
+    struct Scope *current_scope;
 };
 
 struct AstNode *parse(struct Vector *tokens);

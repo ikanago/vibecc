@@ -8,7 +8,7 @@ static void generate_integer(struct AstNode *node) {
     printf("  push %d\n", node->data.integer);
 }
 
-static void genenrate_binary_operation(struct AstNode *node) {
+static void generate_binary_operation(struct AstNode *node) {
     generate_node(node->data.binary_op.lhs);
     generate_node(node->data.binary_op.rhs);
     printf("  pop rdi\n");
@@ -28,11 +28,10 @@ static void genenrate_binary_operation(struct AstNode *node) {
     printf("  push rax\n");
 }
 
-static void generate_return_statement(struct AstNode *node) {
-    generate_node(node->data.return_statement.exp);
-    // Is it OK to pop here even if exp is NULL?
+static void generate_declaration(struct AstNode *node) {
+    generate_node(node->data.declaration.initializer);
     printf("  pop rax\n");
-    printf("  jmp .Lreturn\n");
+    printf("  mov [rbp - %d], rax\n", node->data.declaration.offset);
 }
 
 static void generate_compound_statement(struct AstNode *node) {
@@ -41,6 +40,13 @@ static void generate_compound_statement(struct AstNode *node) {
         struct AstNode *block_item = block_items->data[i];
         generate_node(block_item);
     }
+}
+
+static void generate_return_statement(struct AstNode *node) {
+    generate_node(node->data.return_statement.exp);
+    // Is it OK to pop here even if exp is NULL?
+    printf("  pop rax\n");
+    printf("  jmp .Lreturn\n");
 }
 
 static void generate_node(struct AstNode *node) {
@@ -53,7 +59,10 @@ static void generate_node(struct AstNode *node) {
             generate_integer(node);
             break;
         case AST_BINARY_OPERATION:
-            genenrate_binary_operation(node);
+            generate_binary_operation(node);
+            break;
+        case AST_DECLARATION:
+            generate_declaration(node);
             break;
         case AST_COMPOUND_STATEMENT:
             generate_compound_statement(node);

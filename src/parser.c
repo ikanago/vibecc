@@ -1,10 +1,31 @@
 #include "parser.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
+#include "map.h"
 #include "util.h"
 
 static struct AstNode *parse_statement(struct Parser *parser);
+
+struct Scope *scope_new() {
+    struct Scope *scope = malloc(sizeof(struct Scope));
+    scope->offsets = map_new();
+    scope->current_offset = 0;
+    return scope;
+}
+
+int *scope_add_var(struct Scope *scope, const char *name, int offset) {
+    if (map_get(scope->offsets, name) != NULL) {
+        return NULL;
+    }
+
+    scope->current_offset += offset;
+    int *offset_p = malloc(sizeof(int));
+    *offset_p = scope->current_offset;
+    map_set(scope->offsets, name, offset_p);
+    return offset_p;
+}
 
 // === Token manipulations ===
 
@@ -53,8 +74,6 @@ static struct Type *type(enum TypeKind kind) {
 
 static struct AstNode *integer_constant(struct Token *token) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_INTEGER;
     node->data.integer = atoi(token->value);
     return node;
@@ -64,8 +83,6 @@ static struct AstNode *binary_operation(
     enum TokenKind op, struct AstNode *lhs, struct AstNode *rhs
 ) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_BINARY_OPERATION;
     node->data.binary_op.op = op;
     node->data.binary_op.lhs = lhs;
@@ -75,30 +92,25 @@ static struct AstNode *binary_operation(
 
 static struct AstNode *declarator(char *identifer) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_DECLARATOR;
     node->data.declarator.identifier = identifer;
     return node;
 }
 
 static struct AstNode *declaration(
-    struct Type *type, struct AstNode *declarator, struct AstNode *initializer
+    struct Type *type, struct AstNode *declarator, struct AstNode *initializer, int offset
 ) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_DECLARATION;
     node->data.declaration.type = type;
     node->data.declaration.declarator = declarator;
     node->data.declaration.initializer = initializer;
+    node->data.declaration.offset = offset;
     return node;
 }
 
 static struct AstNode *compound_statement(struct Vector *block_items) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_COMPOUND_STATEMENT;
     node->data.compound_statement.block_items = block_items;
     return node;
@@ -106,8 +118,6 @@ static struct AstNode *compound_statement(struct Vector *block_items) {
 
 static struct AstNode *return_statement(struct AstNode *exp) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
-    if (node == NULL) return NULL;
-
     node->kind = AST_RETURN_STATEMENT;
     node->data.return_statement.exp = exp;
     return node;
@@ -268,10 +278,17 @@ struct AstNode *parse_declarator(struct Parser *parser) {
 static struct AstNode *parse_declaration(struct Parser *parser) {
     struct Type *type = parse_type_specifier(parser);
     struct AstNode *declarator = parse_declarator(parser);
+    char *name = declarator->data.declarator.identifier;
+    int *offset = scope_add_var(parser->current_scope, name, type->size);
+    if (offset == NULL) {
+        fprintf(stderr, "The variable %s is already declared\n", name);
+        abort();
+    }
+
     try_consume_token(parser, TOKEN_ASSIGN);
     struct AstNode *initializer = parse_constant(parser);
     try_consume_token(parser, TOKEN_SEMICOLON);
-    return declaration(type, declarator, initializer);
+    return declaration(type, declarator, initializer, *offset);
 }
 
 // function-definition:
@@ -290,6 +307,9 @@ static struct AstNode *parse_declaration(struct Parser *parser) {
 //     declaration
 //     statement
 static struct AstNode *parse_compound_statement(struct Parser *parser) {
+    struct Scope *scope = scope_new();
+    parser->current_scope = scope;
+
     struct Vector *block_items = vector_new();
     while (!try_consume_token(parser, TOKEN_RBRACE)) {
         vector_push(block_items, parse_statement(parser));
