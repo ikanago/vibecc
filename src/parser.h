@@ -15,6 +15,7 @@ int *scope_add_var(struct Scope *scope, const char *name, int offset);
 
 enum AstNodeKind {
     AST_INTEGER,
+    AST_IDENTIFIER,
     AST_BINARY_OPERATION,
     AST_DECLARATOR,
     AST_DECLARATION,
@@ -26,6 +27,11 @@ struct AstNode {
     enum AstNodeKind kind;
     union {
         int integer;
+
+        struct {
+            char *name;
+            int offset;
+        } identifer;
 
         struct {
             enum TokenKind op;

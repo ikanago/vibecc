@@ -32,6 +32,9 @@ static void print_node_inner(struct AstNode *node, int level) {
             // TODO: output line number and column number, which requires them
             // to be included in AstNode
             break;
+        case AST_IDENTIFIER:
+            printf("identifer: %s\n", node->data.identifer.name);
+            break;
         case AST_BINARY_OPERATION:
             printf("binary operation: ");
             switch (node->data.binary_op.op) {

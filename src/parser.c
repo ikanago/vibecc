@@ -79,6 +79,14 @@ static struct AstNode *integer_constant(struct Token *token) {
     return node;
 }
 
+static struct AstNode *identifer(char *name, int offset) {
+    struct AstNode *node = malloc(sizeof(struct AstNode));
+    node->kind = AST_IDENTIFIER;
+    node->data.identifer.name = name;
+    node->data.identifer.offset = offset;
+    return node;
+}
+
 static struct AstNode *binary_operation(
     enum TokenKind op, struct AstNode *lhs, struct AstNode *rhs
 ) {
@@ -151,9 +159,15 @@ static struct AstNode *parse_constant(struct Parser *parser) {
 //     string-literal
 //     ( expression )
 static struct AstNode *parse_primary_expression(struct Parser *parser) {
-    struct AstNode *node;
-    if ((node = parse_constant(parser))) {
-        return node;
+    struct Token *token = peek_token(parser);
+    if (check_token(parser, TOKEN_INTEGER)) {
+        return parse_constant(parser);
+    }
+    if (token->kind == TOKEN_IDENTIFIER) {
+        parser->current_pos++;
+        char *name = token->value;
+        int *offset = map_get(parser->current_scope->offsets, name);
+        return identifer(name, *offset);
     }
     return NULL;
 }
