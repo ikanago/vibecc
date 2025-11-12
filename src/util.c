@@ -6,7 +6,7 @@
 #include "parser.h"
 
 void print_tokens(struct Vector *tokens) {
-    for (size_t i = 0; i < tokens->size; i++) {
+    for (int i = 0; i < tokens->size; i++) {
         struct Token *t = tokens->data[i];
         printf("(%03d, %03d) %s\n", t->line, t->column, t->value);
     }
@@ -69,7 +69,7 @@ static void print_node_inner(struct AstNode *node, int level) {
         case AST_COMPOUND_STATEMENT:
             printf("compound statement:\n");
             struct Vector *block_items = node->data.compound_statement.block_items;
-            for (size_t i = 0; i < block_items->size; i++) {
+            for (int i = 0; i < block_items->size; i++) {
                 struct AstNode *block_item = block_items->data[i];
                 print_node_inner(block_item, level + 1);
             }

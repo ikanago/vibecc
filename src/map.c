@@ -6,7 +6,7 @@
 
 #define MAP_DEFAULT_CAPACITY 16
 
-struct Map *map_new_inner(size_t capacity) {
+struct Map *map_new_inner(int capacity) {
     struct Map *map = calloc(1, sizeof(struct Map));
     if (map == NULL) return NULL;
 
@@ -53,7 +53,7 @@ int *map_get(struct Map *map, const char *key) {
 static void resize(struct Map *map) {
     struct Map *map2 = map_new_inner(map->capacity * 2);
 
-    for (size_t i = 0; i < map->capacity; i++) {
+    for (int i = 0; i < map->capacity; i++) {
         if (map->keys[i] == NULL) {
             continue;
         }

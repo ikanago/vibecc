@@ -67,11 +67,11 @@ static struct Token *next_token(struct Lexer *lexer) {
     }
 
     if (isdigit(current)) {
-        size_t start = lexer->position;
+        int start = lexer->position;
         while (isdigit(peek_char(lexer))) {
             consume_token(lexer);
         }
-        size_t length = lexer->position - start;
+        int length = lexer->position - start;
         char *value = malloc(length + 1);
         strncpy(value, lexer->input + start, length);
         value[length] = '\0';
@@ -79,11 +79,11 @@ static struct Token *next_token(struct Lexer *lexer) {
     }
 
     if (isalpha(current) || current == '_') {
-        size_t start = lexer->position;
+        int start = lexer->position;
         while (isalnum(peek_char(lexer)) || peek_char(lexer) == '_') {
             consume_token(lexer);
         }
-        size_t length = lexer->position - start;
+        int length = lexer->position - start;
         char *value = malloc(length + 1);
         strncpy(value, lexer->input + start, length);
         value[length] = '\0';

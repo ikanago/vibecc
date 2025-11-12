@@ -7,8 +7,8 @@
 
 struct Vector {
     void **data;
-    size_t size;
-    size_t capacity;
+    int size;
+    int capacity;
 };
 
 struct Vector *vector_new(void);

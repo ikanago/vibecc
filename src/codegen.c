@@ -36,7 +36,7 @@ static void generate_declaration(struct AstNode *node) {
 
 static void generate_compound_statement(struct AstNode *node) {
     struct Vector *block_items = node->data.compound_statement.block_items;
-    for (size_t i = 0; i < block_items->size; i++) {
+    for (int i = 0; i < block_items->size; i++) {
         struct AstNode *block_item = block_items->data[i];
         generate_node(block_item);
     }

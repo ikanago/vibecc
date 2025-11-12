@@ -82,8 +82,8 @@ struct Type {
 
 struct Parser {
     struct Vector *tokens;
-    size_t current_pos;
     struct Scope *current_scope;
+    int current_pos;
 };
 
 struct AstNode *parse(struct Vector *tokens);

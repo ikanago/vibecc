@@ -41,8 +41,8 @@ struct Token {
 
 struct Lexer {
     const char *input;
-    size_t position;
-    size_t length;
+    int position;
+    int length;
     int line;
     int column;
 };

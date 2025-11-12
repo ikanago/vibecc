@@ -10,8 +10,8 @@ extern "C" {
 struct Map {
     char **keys;
     int **values;
-    size_t size;
-    size_t capacity;
+    int size;
+    int capacity;
 };
 
 struct Map *map_new();
