@@ -25,4 +25,6 @@ run 6 '{ return 1 + 2 + 3; }'
 run 7 '{ return 1 + 2 * 3; }'
 run 6 '{ return 2 * 3; }'
 run 24 '{ return 2 * 3 * 4; }'
+run 1 '{ int a = 1; return a; }'
+run 3 '{ int a = 1; int b = 2; return b; }'
 echo -e "${COLOR_VALID}🎉 All tests passed.${COLOR_OFF}"

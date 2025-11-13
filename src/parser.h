@@ -29,6 +29,7 @@ struct AstNode {
         int integer;
 
         struct {
+            struct Type *type;
             char *name;
             int offset;
         } identifer;
@@ -57,7 +58,8 @@ struct AstNode {
 
         struct {
             struct Vector *block_items;
-            struct Scope *scope;
+            // Maybe this should be in function definition, but put it here for now
+            int max_variable_offset;
         } compound_statement;
 
         struct {

@@ -79,7 +79,7 @@ static struct AstNode *integer_constant(struct Token *token) {
     return node;
 }
 
-static struct AstNode *identifer(char *name, int offset) {
+static struct AstNode *identifer(struct Type *type, char *name, int offset) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     node->kind = AST_IDENTIFIER;
     node->data.identifer.name = name;
@@ -117,10 +117,11 @@ static struct AstNode *declaration(
     return node;
 }
 
-static struct AstNode *compound_statement(struct Vector *block_items) {
+static struct AstNode *compound_statement(struct Vector *block_items, int max_variable_offset) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     node->kind = AST_COMPOUND_STATEMENT;
     node->data.compound_statement.block_items = block_items;
+    node->data.compound_statement.max_variable_offset = max_variable_offset;
     return node;
 }
 
@@ -167,6 +168,10 @@ static struct AstNode *parse_primary_expression(struct Parser *parser) {
         parser->current_pos++;
         char *name = token->value;
         int *offset = map_get(parser->current_scope->offsets, name);
+        // ToDo:
+        // 1. Edit struct Map to have a value of type void *
+        // 2. Add struct Map *types in struct Scope to remember types of variables
+        // 3. Get a type of the variable from the scope
         return identifer(name, *offset);
     }
     return NULL;
@@ -328,7 +333,9 @@ static struct AstNode *parse_compound_statement(struct Parser *parser) {
     while (!try_consume_token(parser, TOKEN_RBRACE)) {
         vector_push(block_items, parse_statement(parser));
     }
-    return compound_statement(block_items);
+
+    int max_variable_offset = scope->current_offset;
+    return compound_statement(block_items, max_variable_offset);
 }
 
 // jump-statement:

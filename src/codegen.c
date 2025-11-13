@@ -8,6 +8,12 @@ static void generate_integer(struct AstNode *node) {
     printf("  push %d\n", node->data.integer);
 }
 
+static void generate_identifier(struct AstNode *node) {
+    // Use an appropriate register for a type of the identifer
+    printf("  mov rax, [rbp - %d]\n", node->data.identifer.offset);
+    printf("  push rax\n");
+}
+
 static void generate_binary_operation(struct AstNode *node) {
     generate_node(node->data.binary_op.lhs);
     generate_node(node->data.binary_op.rhs);
@@ -35,6 +41,8 @@ static void generate_declaration(struct AstNode *node) {
 }
 
 static void generate_compound_statement(struct AstNode *node) {
+    printf("  sub rsp, %d\n", node->data.compound_statement.max_variable_offset);
+
     struct Vector *block_items = node->data.compound_statement.block_items;
     for (int i = 0; i < block_items->size; i++) {
         struct AstNode *block_item = block_items->data[i];
@@ -57,6 +65,9 @@ static void generate_node(struct AstNode *node) {
     switch (node->kind) {
         case AST_INTEGER:
             generate_integer(node);
+            break;
+        case AST_IDENTIFIER:
+            generate_identifier(node);
             break;
         case AST_BINARY_OPERATION:
             generate_binary_operation(node);
