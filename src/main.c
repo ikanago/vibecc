@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 
 #include "gen_asm.h"
+#include "gen_ir.h"
 #include "lexer.h"
 #include "parser.h"
 #include "util.h"
@@ -67,7 +68,8 @@ int main(int argc, char **argv) {
         print_node(node);
     }
 
-    generate(node);
+    struct Vector *irs = generate_ir(node);
+    generate_asm(irs);
 
     return 0;
 }

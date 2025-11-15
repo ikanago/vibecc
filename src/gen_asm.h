@@ -5,6 +5,6 @@
 
 #include "parser.h"
 
-void generate(struct AstNode *node);
+void generate_asm(struct Vector *irs);
 
 #endif
