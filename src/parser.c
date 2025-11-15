@@ -305,7 +305,7 @@ static struct AstNode *parse_declaration(struct Parser *parser) {
     }
 
     try_consume_token(parser, TOKEN_ASSIGN);
-    struct AstNode *initializer = parse_constant(parser);
+    struct AstNode *initializer = parse_expression(parser);
     try_consume_token(parser, TOKEN_SEMICOLON);
     return declaration(type, declarator, initializer, *offset);
 }
