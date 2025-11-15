@@ -2,7 +2,7 @@
 
 docker run -it --rm \
     --user "$(id -u):$(id -g)" \
-    --platform linux/amd64 \
+    --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     --mount type=bind,source="$(pwd)",target=/app \
     vibecc:latest \
     "$@"

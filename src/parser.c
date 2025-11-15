@@ -79,7 +79,7 @@ static struct AstNode *integer_constant(struct Token *token) {
     return node;
 }
 
-static struct AstNode *identifer(struct Type *type, char *name, int offset) {
+static struct AstNode *identifer(char *name, int offset) {
     struct AstNode *node = malloc(sizeof(struct AstNode));
     node->kind = AST_IDENTIFIER;
     node->data.identifer.name = name;
