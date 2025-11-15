@@ -43,6 +43,7 @@ struct Ir {
     struct Operand op3;
 };
 
+int is_operand_eq(struct Operand op1, struct Operand op2);
 struct Vector *generate_ir(struct AstNode *node);
 
 #endif

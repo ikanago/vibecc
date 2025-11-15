@@ -2,6 +2,24 @@
 
 #include "gen_ir.h"
 #include "parser.h"
+#include "string.h"
+
+int is_operand_eq(struct Operand op1, struct Operand op2) {
+    if (op1.kind != op2.kind) {
+        return 0;
+    }
+
+    if (op1.kind == OP_REGISTER) {
+        return !strcmp(op1.op.reg, op2.op.reg);
+    }
+    if (op2.kind == OP_IMMEDIATE) {
+        return op1.op.imm == op2.op.imm;
+    }
+    if (op1.kind == OP_LABEL) {
+        return !strcmp(op1.op.label, op2.op.label);
+    }
+    return 1;
+}
 
 static void genenrate_push(struct Ir *ir) {
     printf("  str %s, [sp, #-16]!\n", ir->op1.op.reg);

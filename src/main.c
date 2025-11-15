@@ -6,6 +6,7 @@
 #include "gen_asm.h"
 #include "gen_ir.h"
 #include "lexer.h"
+#include "optimize.h"
 #include "parser.h"
 #include "util.h"
 
@@ -69,6 +70,7 @@ int main(int argc, char **argv) {
     }
 
     struct Vector *irs = generate_ir(node);
+    irs = optimize(irs);
     generate_asm(irs);
 
     return 0;

@@ -4,6 +4,7 @@ set(VIBECC_LIB_SOURCES
     gen_ir.c
     lexer.c
     map.c
+    optimize.c
     parser.c
     util.c
     vector.c
@@ -15,6 +16,7 @@ set(VIBECC_LIB_HEADERS
     gen_ir.h
     lexer.h
     map.h
+    optimize.h
     parser.h
     util.h
     vector.h
