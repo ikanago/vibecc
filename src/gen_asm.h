@@ -1,5 +1,5 @@
-#ifndef CODEGEN_H
-#define CODEGEN_H
+#ifndef GEN_ASM_H
+#define GEN_ASM_H
 
 #include <stdio.h>
 

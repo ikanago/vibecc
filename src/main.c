@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "codegen.h"
+#include "gen_asm.h"
 #include "lexer.h"
 #include "parser.h"
 #include "util.h"

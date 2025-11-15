@@ -1,5 +1,4 @@
-#include "codegen.h"
-
+#include "gen_asm.h"
 #include "parser.h"
 
 static void generate_node(struct AstNode *node);

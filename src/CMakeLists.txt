@@ -1,6 +1,6 @@
 # Source files for the vibecc compiler library
 set(VIBECC_LIB_SOURCES
-    codegen.c
+    gen_asm.c
     lexer.c
     map.c
     parser.c
@@ -10,7 +10,7 @@ set(VIBECC_LIB_SOURCES
 
 # Header files (for IDE integration)
 set(VIBECC_LIB_HEADERS
-    codegen.h
+    gen_asm.h
     lexer.h
     map.h
     parser.h
